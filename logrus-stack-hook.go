@@ -45,22 +45,15 @@ func (hook LogrusStackHook) Levels() []logrus.Level {
 
 // Fire is called by logrus when something is logged.
 func (hook LogrusStackHook) Fire(entry *logrus.Entry) error {
-	var skipFrames int
-	if len(entry.Data) == 0 {
-		// When WithField(s) is not used, we have 8 logrus frames to skip.
-		skipFrames = 8
-	} else {
-		// When WithField(s) is used, we have 6 logrus frames to skip.
-		skipFrames = 6
-	}
+	var skipFrames int = 2
 
 	var frames stack.Stack
 
 	// Get the complete stack track past skipFrames count.
 	_frames := stack.Callers(skipFrames)
 
-	// Remove logrus's own frames that seem to appear after the code is through
-	// certain hoops. e.g. http handler in a separate package.
+	// Remove logrus's own frames
+	// logrus nesting depends on the method: e.g. Info() calls Infof() calls Printf() so it is difficult to know the frames to skip.
 	// This is a workaround.
 	for _, frame := range _frames {
 		if !strings.Contains(frame.File, "github.com/sirupsen/logrus") {

@@ -14,6 +14,7 @@ type Worker struct {
 
 func (w Worker) Perform() {
 	logrus.WithField("jod_id", w.JobID).Infoln("Now working")
+	logrus.WithField("jod_id", w.JobID).Info("Now working")
 
 	err := errors.New("I don't know what to do yet")
 	if err != nil {
